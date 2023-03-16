@@ -26,5 +26,8 @@
     <ClInclude Include="SudokuBoard.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="d_matrix-1.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
