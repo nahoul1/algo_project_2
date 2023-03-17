@@ -12,6 +12,10 @@
 
 using namespace std;
 
+/**************************************************************************
+ * Constructor
+****************************************************************************/
+
 SudokuBoard::SudokuBoard(int N) : boardSize(N)
 {
     // Resize conflict matricies
@@ -23,6 +27,10 @@ SudokuBoard::SudokuBoard(int N) : boardSize(N)
 
 }
 
+
+/**************************************************************************
+ * Starter methods
+****************************************************************************/
 
 void SudokuBoard::clearBoard()
 {
@@ -58,7 +66,9 @@ void SudokuBoard::initializeBoard(ifstream& fin)
 }
 
 
-
+/**************************************************************************
+ * Methods involved in the algorithm
+****************************************************************************/
 
 // Function checks if the place in the matrix is empty or not.
 bool SudokuBoard::findEmpty(int &row, int &col)
@@ -158,13 +168,19 @@ bool SudokuBoard::solveSudoku(int& recur, int& backtrack)
         int row = emptyFinderrow();
         int col = emptyFindercol();
 
-        for(int number = 1; number < 10; number++)
+        for(int number = 1; number < boardSize + 1; number++)
         {
+
             if (checkConflicts(number,row,col))
             {
                 sdkMatrix[row][col] = number;
 
-                if (solveSudoku(recur, backtrack) == true)
+                bool solution = solveSudoku(recur, backtrack);
+                if (solution == false)
+                {
+                    backtrack++;
+                }
+                if (solution == true)
                 {
                     return true;
                 }
@@ -178,6 +194,7 @@ bool SudokuBoard::solveSudoku(int& recur, int& backtrack)
 
 
 }
+/**************************************************************************/
 
 
 
@@ -237,10 +254,6 @@ void SudokuBoard::printSudoku(ofstream& out)
     out << endl;
 }
 
-
-
-
-
 void SudokuBoard::setConflict() {
 	// does exactly that
 	for (int i = 0; i < boardSize; i++) {
@@ -264,14 +277,14 @@ void SudokuBoard::printConflict(ofstream& out) {
 		}
 		cout << endl;
 	}
-	cout << "col conflicts" << endl;
+	cout << "row conflicts" << endl;
 	for (int i = 0; i < boardSize; i++) {
 		for (int j = 0; j < boardSize; j++) {
 			cout << c_cols[i][j];
 		}
 		cout << endl;
 	}
-	cout << "row conflicts" << endl;
+	cout << "col conflicts" << endl;
 	for (int i = 0; i < boardSize; i++) {
 		for (int j = 0; j < boardSize; j++) {
 			cout << c_rows[i][j];
@@ -339,6 +352,5 @@ int SudokuBoard::findLocation(int row, int col) {
 		}
 	}
 }
-
 
 
