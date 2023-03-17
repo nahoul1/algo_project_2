@@ -30,21 +30,15 @@ public:
     SudokuBoard(int N = 9);     // Constructor
     void clearBoard();
     void initializeBoard(ifstream& fin);
-    bool solveSudoku();
-    void printSudoku();
-
+    bool solveSudoku(int &recur, int &backtrack);
+    void printSudoku(ofstream& out);
     bool findEmpty(int &row, int &col);
     bool checkConflicts(int &number, int &row, int &col);
-
     int emptyFinderrow();
     int emptyFindercol();
-
-
-    void printConflict();
+    void printConflict(ofstream& out);
     void setConflict();
     int findLocation(int row, int col);
-    void file(const string& filename);
-
 };
 
 #endif
