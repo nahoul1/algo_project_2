@@ -53,10 +53,129 @@ void SudokuBoard::initializeBoard(ifstream& fin)
     }
 }
 
+
+
+
+// Function checks if the place in the matrix is empty or not.
+bool SudokuBoard::findEmpty(int &row, int &col)
+{
+    //blank indicates that the place in the matrix is empty.
+    if (sdkMatrix[row][col] == Blank)
+    {
+        return true;
+    }
+
+        // if not then its the place in the matrix is not empty.
+    else
+    {
+        return false;
+    }
+}
+
+//checks if move is valid
+bool SudokuBoard::checkConflicts(int &number, int &row, int &col)
+{
+
+
+    // checking for the row by iterating through each column in the row
+    for(int colitr = 0; colitr < boardSize; colitr++)
+    {
+        if ((sdkMatrix[row][colitr] == number) && (colitr != col))
+        {
+            return false;
+        }
+    }
+
+
+    // checking for the column by iterating through each row in the column
+    for(int rowitr = 0; rowitr < boardSize; rowitr++)
+    {
+        if ((sdkMatrix[rowitr][col] == number) && (rowitr != row))
+        {
+            return false;
+        }
+    }
+
+    // Checking each 3x3 square to find the box square integer division has been utilized.
+    int box_y = row / 3; // y value is the row
+    int box_x = col / 3; // x value is the col
+    for(int colitr = (box_x*3); colitr < (box_x*3)+3; colitr++ )
+        for(int rowitr = (box_y*3); rowitr < (box_y*3)+3; rowitr++ )
+        {
+            if ((sdkMatrix[rowitr][colitr] == number) && (colitr != col) && (rowitr != row))
+            {
+                return false;
+            }
+        }
+
+    // if all for loops are satisfied - no conflict exists.
+    return true;
+}
+
+// Two methods find the blackspace row and col
+int SudokuBoard::emptyFinderrow()
+{
+    for(int row = 0; row < boardSize; row++)
+        for(int col = 0; col < boardSize; col++)
+        {
+            if(findEmpty(row, col) == true)
+            {
+                return row;
+            }
+        }
+
+    return 10;
+}
+int SudokuBoard::emptyFindercol()
+{
+    for(int row = 0; row < boardSize; row++)
+        for(int col = 0; col < boardSize; col++)
+        {
+            if(findEmpty(row, col) == true)
+            {
+                return col;
+            }
+        }
+
+    return 10;
+}
+
+// Solves the sudokuboard.
 bool SudokuBoard::solveSudoku()
 {
-    return false;
+
+
+    if(emptyFindercol() == 10 || emptyFinderrow() == 10)
+    {
+        return true;
+    }
+    else
+    {
+        int row = emptyFinderrow();
+        int col = emptyFindercol();
+
+        for(int number = 1; number < 10; number++)
+        {
+            if (checkConflicts(number,row,col))
+            {
+                sdkMatrix[row][col] = number;
+
+                if (solveSudoku() == true)
+                {
+                    return true;
+                }
+
+                sdkMatrix[row][col] = Blank;
+            }
+        }
+
+        return false;
+    }
+
+
 }
+
+
 
 void SudokuBoard::printSudoku()
 {
@@ -73,9 +192,9 @@ void SudokuBoard::printSudoku()
             if ((j - 1) % SquareSize == 0)
                 cout << "|";
             if (sdkMatrix[i - 1][j - 1] != Blank)
-                cout << " " << sdkMatrix[i - 1][j - 1] << " ";
+                cout << " " << sdkMatrix[i - 1][j - 1] << " "; // prints out number
             else
-                cout << " - ";
+                cout << " - ";  // prints blank indicating no number.
         }
         cout << "|";
         cout << endl;
@@ -87,85 +206,8 @@ void SudokuBoard::printSudoku()
     cout << endl;
 }
 
-bool SudokuBoard::findEmpty() {
-    return false;
-}
 
 
 void SudokuBoard::printConflict() {
 	
-}
-
-
-
-
-
-
-/**************************************************************************
-* Project 1 TEAM 2
-* author          :Ajinkya Joshi, Anthony Chamoun
-* Date            :March 15th, 2023
-* File name       :SudokuBoard.cpp
-* Purpose         :
- **************************************************************************/
-
-#include <fstream>
-#include <iostream>
-#include "SudokuBoard.h"
-
-using namespace std;
-
-int main() {
-	int recursiveCount; // # of recursive calls
-	int backtracksCount; // # of backtracks involved for each board
-	int boardCount = 0; // # of Boards from file solved
-	int boardSize = 9;
-	// Create SudokuBoard object
-	SudokuBoard* sdk = new SudokuBoard(boardSize);
-	// Open the data file and verify it opens successfully
-	ifstream fin;
-	fin.open("Sudoku3Puzzles.txt");
-	if (!fin)
-	{
-		cerr << "Cannot open 'sudoku1.txt'" << endl;
-		exit(1);
-	}
-	// Each iterations solves a NEW board from the input file
-	while (fin && fin.peek() != 'Z') {
-		recursiveCount = 0; // Reset # of recursive calls
-		backtracksCount = 0; // Reset # of backtrack calls
-		boardCount++; // New board to be solved
-		// Initialize sudoku matrix
-		sdk->initializeBoard(fin); // reads Sudoku from file
-		// Print sudoku
-		cout << "\n***** NEW SUDOKU PUZZLE... ******" << endl;
-		sdk->printSudoku(); // print the board on the terminal
-		// ******** Evaluate and print conflicts *****
-		// If found, print out the resulting solution and final conflicts
-		if (sdk->solveSudoku()) {
-			// Print on the terminal
-			cout << "\nComplete Solution Found." << endl;
-			cout << "\nCompleted board ..." << endl;
-			/* Print completed board
-			/* print the conflicts
-			/* print # of recursive calls
-			/* print # of backtrack calls */
-
-		}
-		else {
-			cout << "\nNo Solution Found...!" << endl;
-			cout << "\nIncomplete board ..." << endl;
-			/* Print incompleted board */
-		}
-	}
-
-	cout << "Number of boards solved: " << boardCount << endl;
-	// ****** Post processing **********
-	// Determine the min, max, and average of the recursives calls and backtract
-	// calls for the boards solved and print this information into the
-	// file as well.
-	cout << "\n***** Solver Terminating... ******" << endl;
-	fin.close();
-	delete sdk;
-	return 0;
 }

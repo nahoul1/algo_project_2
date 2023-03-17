@@ -32,7 +32,14 @@ public:
     void initializeBoard(ifstream& fin);
     bool solveSudoku();
     void printSudoku();
-    bool findEmpty();
+
+    bool findEmpty(int &row, int &col);
+    bool checkConflicts(int &number, int &row, int &col);
+
+    int emptyFinderrow();
+    int emptyFindercol();
+
+
     void printConflict();
     void setConflict();
     int findLocation();
