@@ -21,7 +21,7 @@ const int SquareSize = 3;
 class SudokuBoard
 {
 private:
-    int boardSize;              // Size of the sudoku board
+    int boardSize, count = 0;              // Size of the sudoku board
     matrix<int> sdkMatrix;  // Sudoku matrix
     matrix<bool> c_rows;    // conflict matricies
     matrix<bool> c_cols;
@@ -32,11 +32,11 @@ public:
     void initializeBoard(ifstream& fin);
     bool solveSudoku();
     void printSudoku();
-    bool findEmpty();
+    void findEmpty(int& row, int& col);
     void printConflict();
     void setConflict();
-    int findLocation();
-    void file();
+    int findLocation(int row, int col);
+    void file(const string& filename);
 
 };
 
