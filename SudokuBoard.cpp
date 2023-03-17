@@ -147,10 +147,10 @@ int SudokuBoard::emptyFindercol()
 }
 
 // Solves the sudokuboard.
-bool SudokuBoard::solveSudoku()
+bool SudokuBoard::solveSudoku(int& recur, int& backtrack)
 {
 
-
+	recur += 1;
     if(emptyFindercol() == 10 || emptyFinderrow() == 10)
     {
         return true;
@@ -166,7 +166,7 @@ bool SudokuBoard::solveSudoku()
             {
                 sdkMatrix[row][col] = number;
 
-                if (solveSudoku() == true)
+                if (solveSudoku(recur, backtrack) == true)
                 {
                     return true;
                 }
@@ -183,7 +183,7 @@ bool SudokuBoard::solveSudoku()
 
 
 
-void SudokuBoard::printSudoku()
+void SudokuBoard::printSudoku(ofstream& out)
 {
     for (int i = 1; i <= boardSize; i++)
     {
@@ -210,6 +210,33 @@ void SudokuBoard::printSudoku()
         cout << "---";
     cout << "-";
     cout << endl;
+
+    // prints same thing to textfile
+    for (int i = 1; i <= boardSize; i++)
+    {
+        if ((i - 1) % SquareSize == 0)
+        {
+            for (int j = 1; j <= boardSize + 1; j++)
+                out << "---";
+            out << endl;
+        }
+        for (int j = 1; j < boardSize + 1; j++)
+        {
+            if ((j - 1) % SquareSize == 0)
+                out << "|";
+            if (sdkMatrix[i - 1][j - 1] != Blank)
+                out << " " << sdkMatrix[i - 1][j - 1] << " "; // prints out number
+            else
+                out << " - ";  // prints blank indicating no number.
+        }
+        out << "|";
+        out << endl;
+    }
+    out << " -";
+    for (int j = 1; j <= boardSize - 1; j++)
+        out << "---";
+    out << "-";
+    out << endl;
 }
 
 
@@ -231,7 +258,7 @@ void SudokuBoard::setConflict() {
 	}
 }
 
-void SudokuBoard::printConflict() {
+void SudokuBoard::printConflict(ofstream& out) {
 	cout << "square conflicts" << endl;
 	for (int i = 0; i < boardSize; i++) {
 		for (int j = 0; j < boardSize; j++) {
@@ -252,6 +279,29 @@ void SudokuBoard::printConflict() {
 			cout << c_rows[i][j];
 		}
 		cout << endl;
+	}
+
+	// prints same thing to textfile
+	out << "square conflicts" << endl;
+	for (int i = 0; i < boardSize; i++) {
+		for (int j = 0; j < boardSize; j++) {
+			out << c_sqs[i][j];
+		}
+		out << endl;
+	}
+	out << "col conflicts" << endl;
+	for (int i = 0; i < boardSize; i++) {
+		for (int j = 0; j < boardSize; j++) {
+			out << c_cols[i][j];
+		}
+		out << endl;
+	}
+	out << "row conflicts" << endl;
+	for (int i = 0; i < boardSize; i++) {
+		for (int j = 0; j < boardSize; j++) {
+			out << c_rows[i][j];
+		}
+		out << endl;
 	}
 }
 
@@ -305,7 +355,7 @@ int SudokuBoard::findLocation(int row, int col) {
 * Date            :March 15th, 2023
 * File name       :SudokuBoard.cpp
 * Purpose         :
- **************************************************************************/
+ **************************************************************************
 
 #include <fstream>
 #include <iostream>
@@ -357,7 +407,7 @@ int main() {
 			/* Print completed board
 			/* print the conflicts
 			/* print # of recursive calls
-			/* print # of backtrack calls */
+			/* print # of backtrack calls *
 			sdk->printSudoku();
 
 		}
@@ -365,7 +415,7 @@ int main() {
 			cout << "\nNo Solution Found...!" << endl;
 			cout << "\nIncomplete board ..." << endl;
 			sdk->printSudoku();
-			/* Print incompleted board */
+			/* Print incompleted board *
 		}
 	}
 
@@ -380,3 +430,4 @@ int main() {
 	delete sdk;
 	return 0;
 }
+*/
