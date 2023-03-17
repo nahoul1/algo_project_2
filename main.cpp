@@ -33,7 +33,7 @@ int main() {
 
 
     ifstream fin;
-    fin.open("Sudoku3Puzzles.txt");
+    fin.open("/Users/ajinkyajoshi/CLionProjects/algo_project_2/sudoku1.txt");
     if (!fin)
     {
         cerr << "Cannot open 'sudoku1.txt'" << endl;
@@ -41,7 +41,7 @@ int main() {
     }
     
     ofstream out;
-    out.open("Output.txt");
+    out.open("/Users/ajinkyajoshi/CLionProjects/algo_project_2/Output.txt");
     if (!out) {
         cerr << "Cannot open file << endl";
         exit(1);

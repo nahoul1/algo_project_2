@@ -1,18 +1,20 @@
 /**************************************************************************
 * Project 1 TEAM 2
-* author          :Ajinkya Joshi, Anthony Chamoun
+* author: Ajinkya Joshi, Anthony Chamoun
 * Date : March 15, 2023
-* File name : SodukoBoard.cpp - Solve Sudoku Puzzles using
-* : recursive algorithms
+* File name: SodukoBoard.cpp - Solve Sudoku Puzzles using recursive algorithms
 * Purpose : Reads in a puzzle of more from a files and solves them
 * Usage : g++ SudokuBoard.cpp -o output
-* : ./output (No Makefile required)
 ****************************************************************************/
 
 #include "SudokuBoard.h"
 #include <fstream>
 
 using namespace std;
+
+/**************************************************************************
+ * Constructor
+****************************************************************************/
 
 SudokuBoard::SudokuBoard(int N) : boardSize(N)
 {
@@ -25,6 +27,10 @@ SudokuBoard::SudokuBoard(int N) : boardSize(N)
 
 }
 
+
+/**************************************************************************
+ * Starter methods
+****************************************************************************/
 
 void SudokuBoard::clearBoard()
 {
@@ -60,7 +66,9 @@ void SudokuBoard::initializeBoard(ifstream& fin)
 }
 
 
-
+/**************************************************************************
+ * Methods involved in the algorithm
+****************************************************************************/
 
 // Function checks if the place in the matrix is empty or not.
 bool SudokuBoard::findEmpty(int &row, int &col)
@@ -160,13 +168,19 @@ bool SudokuBoard::solveSudoku(int& recur, int& backtrack)
         int row = emptyFinderrow();
         int col = emptyFindercol();
 
-        for(int number = 1; number < 10; number++)
+        for(int number = 1; number < boardSize + 1; number++)
         {
+
             if (checkConflicts(number,row,col))
             {
                 sdkMatrix[row][col] = number;
 
-                if (solveSudoku(recur, backtrack) == true)
+                bool solution = solveSudoku(recur, backtrack);
+                if (solution == false)
+                {
+                    backtrack++;
+                }
+                if (solution == true)
                 {
                     return true;
                 }
@@ -180,6 +194,7 @@ bool SudokuBoard::solveSudoku(int& recur, int& backtrack)
 
 
 }
+/**************************************************************************/
 
 
 
@@ -239,10 +254,6 @@ void SudokuBoard::printSudoku(ofstream& out)
     out << endl;
 }
 
-
-
-
-
 void SudokuBoard::setConflict() {
 	// does exactly that
 	for (int i = 0; i < boardSize; i++) {
@@ -266,14 +277,14 @@ void SudokuBoard::printConflict(ofstream& out) {
 		}
 		cout << endl;
 	}
-	cout << "col conflicts" << endl;
+	cout << "row conflicts" << endl;
 	for (int i = 0; i < boardSize; i++) {
 		for (int j = 0; j < boardSize; j++) {
 			cout << c_cols[i][j];
 		}
 		cout << endl;
 	}
-	cout << "row conflicts" << endl;
+	cout << "col conflicts" << endl;
 	for (int i = 0; i < boardSize; i++) {
 		for (int j = 0; j < boardSize; j++) {
 			cout << c_rows[i][j];
@@ -343,91 +354,3 @@ int SudokuBoard::findLocation(int row, int col) {
 }
 
 
-
-
-
-
-
-
-/**************************************************************************
-* Project 1 TEAM 2
-* author          :Ajinkya Joshi, Anthony Chamoun
-* Date            :March 15th, 2023
-* File name       :SudokuBoard.cpp
-* Purpose         :
- **************************************************************************
-
-#include <fstream>
-#include <iostream>
-#include "SudokuBoard.h"
-
-using namespace std;
-
-int main() {
-	int recursiveCount; // # of recursive calls
-	int backtracksCount; // # of backtracks involved for each board
-	int boardCount = 0; // # of Boards from file solved
-	int boardSize = 9;
-	// Create SudokuBoard object
-	SudokuBoard* sdk = new SudokuBoard(boardSize);
-	// Open the data file and verify it opens successfully
-	ifstream fin;
-	fin.open("Sudoku3Puzzles.txt");
-	if (!fin)
-	{
-		cerr << "Cannot open 'sudoku1.txt'" << endl;
-		exit(1);
-	}
-	// Each iterations solves a NEW board from the input file
-	while (fin && fin.peek() != 'Z') {
-		recursiveCount = 0; // Reset # of recursive calls
-		backtracksCount = 0; // Reset # of backtrack calls
-		boardCount++; // New board to be solved
-		// Initialize sudoku matrix
-		sdk->initializeBoard(fin); // reads Sudoku from file
-		sdk->setConflict();
-
-
-		// will put all of the terminal into a text file
-		sdk->file("output.txt");
-
-		// Print sudoku
-		cout << "\n***** NEW SUDOKU PUZZLE... ******" << endl;
-		sdk->printSudoku(); // print the board on the terminal
-
-
-
-
-		// ******** Evaluate and print conflicts *****
-		// If found, print out the resulting solution and final conflicts
-		if (sdk->solveSudoku()) {
-			// Print on the terminal
-			cout << "\nComplete Solution Found." << endl;
-			cout << "\nCompleted board ..." << endl;
-			/* Print completed board
-			/* print the conflicts
-			/* print # of recursive calls
-			/* print # of backtrack calls *
-			sdk->printSudoku();
-
-		}
-		else {
-			cout << "\nNo Solution Found...!" << endl;
-			cout << "\nIncomplete board ..." << endl;
-			sdk->printSudoku();
-			/* Print incompleted board *
-		}
-	}
-
-	cout << "Number of boards solved: " << boardCount << endl;
-	// ****** Post processing **********
-	// Determine the min, max, and average of the recursives calls and backtract
-	// calls for the boards solved and print this information into the
-	// file as well.
-	cout << "\n***** Solver Terminating... ****** \n" << endl;
-
-	fin.close();
-	delete sdk;
-	return 0;
-}
-*/
