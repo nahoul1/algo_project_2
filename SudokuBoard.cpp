@@ -59,41 +59,128 @@ void SudokuBoard::initializeBoard(ifstream& fin)
     }
 }
 
-void SudokuBoard::file(const string& filename) {
-	ofstream ofs(filename);
-	streambuf* coutbuf = cout.rdbuf();
-	cout.rdbuf(ofs.rdbuf());
+
+
+
+// Function checks if the place in the matrix is empty or not.
+bool SudokuBoard::findEmpty(int &row, int &col)
+{
+    //blank indicates that the place in the matrix is empty.
+    if (sdkMatrix[row][col] == Blank)
+    {
+        return true;
+    }
+
+        // if not then its the place in the matrix is not empty.
+    else
+    {
+        return false;
+    }
 }
 
+//checks if move is valid
+bool SudokuBoard::checkConflicts(int &number, int &row, int &col)
+{
+
+
+    // checking for the row by iterating through each column in the row
+    for(int colitr = 0; colitr < boardSize; colitr++)
+    {
+        if ((sdkMatrix[row][colitr] == number) && (colitr != col))
+        {
+            return false;
+        }
+    }
+
+
+    // checking for the column by iterating through each row in the column
+    for(int rowitr = 0; rowitr < boardSize; rowitr++)
+    {
+        if ((sdkMatrix[rowitr][col] == number) && (rowitr != row))
+        {
+            return false;
+        }
+    }
+
+    // Checking each 3x3 square to find the box square integer division has been utilized.
+    int box_y = row / 3; // y value is the row
+    int box_x = col / 3; // x value is the col
+    for(int colitr = (box_x*3); colitr < (box_x*3)+3; colitr++ )
+        for(int rowitr = (box_y*3); rowitr < (box_y*3)+3; rowitr++ )
+        {
+            if ((sdkMatrix[rowitr][colitr] == number) && (colitr != col) && (rowitr != row))
+            {
+                return false;
+            }
+        }
+
+    // if all for loops are satisfied - no conflict exists.
+    return true;
+}
+
+// Two methods find the blackspace row and col
+int SudokuBoard::emptyFinderrow()
+{
+    for(int row = 0; row < boardSize; row++)
+        for(int col = 0; col < boardSize; col++)
+        {
+            if(findEmpty(row, col) == true)
+            {
+                return row;
+            }
+        }
+
+    return 10;
+}
+int SudokuBoard::emptyFindercol()
+{
+    for(int row = 0; row < boardSize; row++)
+        for(int col = 0; col < boardSize; col++)
+        {
+            if(findEmpty(row, col) == true)
+            {
+                return col;
+            }
+        }
+
+    return 10;
+}
+
+// Solves the sudokuboard.
 bool SudokuBoard::solveSudoku()
 {
-	// need to figure out how backtracking works
-	count += 1;
-	int row = 0, col = 0;
-	findEmpty(row, col);
-	if (row == boardSize + 1 || col == boardSize + 1) {
-		return true;
-	}
-	else {
-		int l = findLocation(row, col);
-		for (int i = 0; i < boardSize; i++) {
-			if (c_rows[row][i] == 0 && c_cols[col][i] == 0 && c_sqs[l][i] == 0) {
-				sdkMatrix[row][col] = i + 1;
-				c_rows[row][i] = 1;
-				c_cols[col][i] = 1;
-				c_sqs[l][i] = 1;
-				break;
-			}
-			else if (c_rows[row][i] == 1 || c_cols[col][i] == 1 || c_sqs[l][i] == 1) {
 
-			}
-		}
-	}
-	if (count == 40) {
-		return false;
-	}
-	solveSudoku();
+
+    if(emptyFindercol() == 10 || emptyFinderrow() == 10)
+    {
+        return true;
+    }
+    else
+    {
+        int row = emptyFinderrow();
+        int col = emptyFindercol();
+
+        for(int number = 1; number < 10; number++)
+        {
+            if (checkConflicts(number,row,col))
+            {
+                sdkMatrix[row][col] = number;
+
+                if (solveSudoku() == true)
+                {
+                    return true;
+                }
+
+                sdkMatrix[row][col] = Blank;
+            }
+        }
+
+        return false;
+    }
+
+
 }
+
 
 
 void SudokuBoard::printSudoku()
@@ -111,9 +198,9 @@ void SudokuBoard::printSudoku()
             if ((j - 1) % SquareSize == 0)
                 cout << "|";
             if (sdkMatrix[i - 1][j - 1] != Blank)
-                cout << " " << sdkMatrix[i - 1][j - 1] << " ";
+                cout << " " << sdkMatrix[i - 1][j - 1] << " "; // prints out number
             else
-                cout << " - ";
+                cout << " - ";  // prints blank indicating no number.
         }
         cout << "|";
         cout << endl;
@@ -125,20 +212,7 @@ void SudokuBoard::printSudoku()
     cout << endl;
 }
 
-void SudokuBoard::findEmpty(int &row, int &col) {
-	// need to pass by reference ,, hoping this works ,, it does
-	for (int i = 0; i < boardSize; i++) {
-		for (int j = 0; j < boardSize; j++) {
-			if (sdkMatrix[i][j] == Blank) {
-				row = i;
-				col = j;
-				i = j = boardSize;
-				break;
-			}
-		}
-		
-	}
-}
+
 
 
 
